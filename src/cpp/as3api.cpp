@@ -31,33 +31,59 @@ void amras3_encode() __attribute__((used,
 
 void amras3_encode()
 {
-	inline_as3("trace(\"ver is 12\");");
+	inline_as3("trace(\"ver is 30\");");
 	
 	char *byteArray_c;
+	char *byteArray_c1;
     unsigned int len;
 
     inline_as3("%0 = srcBuff.bytesAvailable;" : "=r"(len));
     byteArray_c = (char *)malloc(len);
+	byteArray_c1 = (char *)malloc(len);
 
     inline_as3("CModule.ram.position = %0;" : : "r"(byteArray_c));
     inline_as3("srcBuff.readBytes(CModule.ram);");	
 	
 	//AS3_Trace(len);
 	//printf("len is %d", len);
+	inline_as3("trace(\"byteArray_c is \" + %0);" : : "r"(byteArray_c));
 	inline_as3("trace(\"len is \" + %0);" : : "r"(len));
-	
+	int val;
 	for (int i = 0; i < len; ++i) {
-		inline_as3("trace(\"src0 is \" + %0);" : : "r"(i));
-		int val = byteArray_c[i];
-		inline_as3("trace(\"src11 is \" + %0);" : : "r"(val));
-		byteArray_c[i] = byteArray_c[i] + 1;
-		val = byteArray_c[i];
-		inline_as3("trace(\"src21 is \" + %0);" : : "r"(val));
+		//inline_as3("trace(\"src0 is \" + %0);" : : "r"(i));
+		//val = byteArray_c[i];
+		inline_as3("trace(\"src11 is \" + %0);" : : "r"(byteArray_c[i]));
+		//byteArray_c1[i] = byteArray_c[i] + 1;
+		//val = byteArray_c1[i];
+		//inline_as3("trace(\"src21 is \" + %0);" : : "r"(byteArray_c1[i]));
+		
+		//inline_as3("destBuff.writeByte(%0);" : : "r"(val));
 	}
 	
-	//inline_as3("destBuff.position = 0;");
+	inline_as3("destBuff.position = 0;");
 	//inline_as3("CModule.ram.position = %0;" : : "r"(byteArray_c));
-	//inline_as3("destBuff.writeBytes(CModule.ram, 0, %0);" : : "r"(len));
+	inline_as3("destBuff.writeBytes(CModule.ram, %0, %1);" : : "r"(byteArray_c1), "r"(len));
+	
+	//free(byteArray_c);
+    // return void
+	AS3_ReturnAS3Var(undefined);
+	
+	//inline_as3("var retval = %0;" : : "r"(byteArray_c1));
+	
+    //AS3_ReturnAS3Var(retval);
+}
+
+////** amras3_free **////
+void amras3_free() __attribute__((used,
+     annotate("as3sig:public function amras3_free(buff:int):void"),
+     annotate("as3package:com.xfan.amras3.flascc")));
+
+void amras3_free()
+{
+    unsigned char *byteArray_c = NULL;
+	
+    // convert arguments
+    AS3_GetScalarFromVar(byteArray_c, buff);
 	
 	free(byteArray_c);
     // return void

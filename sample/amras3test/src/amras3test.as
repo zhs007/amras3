@@ -24,10 +24,13 @@ package
 			trace("len is " + buff2.length);
 			
 			buff2.position = 0;
+			buff.position = 0;
 			for (var i:int = 0; i < buff2.length; ++i)
 			{
 				var val:int = buff2.readByte();
 				trace("cur " + i + " is " + val);
+				//var val1:int = buff.readByte();
+				//trace("cur1 " + i + " is " + val1);
 			}
 		}
 	}

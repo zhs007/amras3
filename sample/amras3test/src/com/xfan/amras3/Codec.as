@@ -1,8 +1,7 @@
 package com.xfan.amras3
 {
-	import com.xfan.amras3.flascc.*;
-	
 	import com.xfan.amras3.flascc.CModule;
+	import com.xfan.amras3.flascc.amras3_encode;
 	import com.xfan.amras3.flascc.ram;
 	
 	import flash.utils.ByteArray;
@@ -11,11 +10,14 @@ package com.xfan.amras3
 	{
 		static public function encode(src:ByteArray):ByteArray
 		{
-			var dest:ByteArray = new ByteArray;
+			var buff:ByteArray = new ByteArray;
+			amras3_encode(src, buff);
+			//var buff:ByteArray = new ByteArray;
+			//trace(dest);
+			//ram.position = dest;
+			//buff.writeBytes(ram, dest, 5);
 			
-			amras3_encode(src, dest);
-			
-			return dest;
+			return buff;
 		}
 	}
 }

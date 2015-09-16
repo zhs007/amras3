@@ -11,11 +11,11 @@ package
 		{
 			var buff:ByteArray = new ByteArray;
 			
-			buff.writeByte(0);
+			buff.writeByte(1);
 			buff.writeByte(7);
 			buff.writeByte(2);
 			buff.writeByte(9);
-			buff.writeByte(0);
+			buff.writeByte(1);
 			
 			buff.position = 0;
 			

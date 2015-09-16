@@ -81,6 +81,7 @@ void amras3_encodeex()
 	char *byteArray_src;
 	char *byteArray_dest;
     unsigned int len;
+	int i;
 	
     // convert arguments
     AS3_GetScalarFromVar(byteArray_src, srcBuff);
@@ -98,7 +99,7 @@ void amras3_encodeex()
 	//inline_as3("trace(\"byteArray_c is \" + %0);" : : "r"(byteArray_c));
 	//inline_as3("trace(\"len is \" + %0);" : : "r"(len));
 	
-	for (int i = 0; i < len; ++i) {
+	for (i = 0; i < len; ++i) {
 		byteArray_dest[i] = byteArray_src[i] + 1;
 	//	inline_as3("trace(\"src0 is \" + %0);" : : "r"(i));
 	//	int val = byteArray_c[i];

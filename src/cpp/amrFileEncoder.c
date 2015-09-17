@@ -263,7 +263,7 @@ int ReadPCMFrameEx(short speech[], const char* pBuff, int offset, int len, int n
 // bps决定样本(sample)大小
 // bps = 8 --> 8位 unsigned char
 //       16 --> 16位 unsigned short
-const char* EncodeAMR(const char* wavBuf, int lenBuf, int nChannels, int nBitsPerSample, int* pBuffLen)
+char* EncodeAMR(const char* wavBuf, int lenBuf, int nChannels, int nBitsPerSample, int* pBuffLen)
 {
 	char* destBuf = malloc(lenBuf);
 	int lenDest = lenBuf;

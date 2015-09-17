@@ -23,6 +23,8 @@
 #include <string.h>
 #include "AS3/AS3.h"
 
+#include "amrFileCodec.h"
+
 ////** amras3_encode **////
 void amras3_encode() __attribute__((used,
      annotate("as3sig:public function amras3_encode(srcBuff:ByteArray, destBuff:ByteArray):int"),
@@ -76,17 +78,28 @@ void amras3_encodeex() __attribute__((used,
 
 void amras3_encodeex()
 {
-	inline_as3("trace(\"ver is 38\");");
+	inline_as3("trace(\"ver is 50\");");
 	
 	char *byteArray_src;
 	char *byteArray_dest;
-    unsigned int len;
+	char *buff;
+    int len;
+	int destlen;
 	int i;
 	
     // convert arguments
     AS3_GetScalarFromVar(byteArray_src, srcBuff);
     AS3_GetScalarFromVar(len, srcLen);
 	AS3_GetScalarFromVar(byteArray_dest, destBuff);
+	
+	buff = EncodeAMR(byteArray_src, len, 1, 16, &destlen);
+	if (destlen > len) {
+		inline_as3("trace(\"dest len fail!\");");
+	}
+	else {
+		memcpy(byteArray_dest, buff, destlen);
+		free(buff);
+	}
 
     //inline_as3("%0 = srcBuff.bytesAvailable;" : "=r"(len));
     //byteArray_c = (char *)malloc(len);
@@ -96,11 +109,11 @@ void amras3_encodeex()
 	
 	//AS3_Trace(len);
 	//printf("len is %d", len);
-	//inline_as3("trace(\"byteArray_c is \" + %0);" : : "r"(byteArray_c));
-	//inline_as3("trace(\"len is \" + %0);" : : "r"(len));
+	inline_as3("trace(\"src len is \" + %0);" : : "r"(len));
+	inline_as3("trace(\"dest len is \" + %0);" : : "r"(destlen));
 	
-	for (i = 0; i < len; ++i) {
-		byteArray_dest[i] = byteArray_src[i] + 1;
+	//for (i = 0; i < len; ++i) {
+	//	byteArray_dest[i] = byteArray_src[i] + 1;
 	//	inline_as3("trace(\"src0 is \" + %0);" : : "r"(i));
 	//	int val = byteArray_c[i];
 	//	inline_as3("trace(\"src11 is \" + %0);" : : "r"(val));
@@ -109,13 +122,13 @@ void amras3_encodeex()
 	//	inline_as3("trace(\"src21 is \" + %0);" : : "r"(val));
 		
 		//inline_as3("destBuff.writeByte(%0);" : : "r"(val));
-	}
+	//}
 	
 	//inline_as3("destBuff.position = 0;");
 	//inline_as3("CModule.ram.position = %0;" : : "r"(byteArray_c));
 	//inline_as3("destBuff.writeBytes(CModule.ram, %0, %1);" : : "r"(byteArray_c), "r"(len));
 	
-	inline_as3("var retval:int = %0;" : : "r"(len));
+	inline_as3("var retval:int = %0;" : : "r"(destlen));
 	//free(byteArray_c);
     // return void
     //AS3_ReturnAS3Var(undefined);

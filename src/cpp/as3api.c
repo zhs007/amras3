@@ -139,3 +139,73 @@ void amras3_encodeex()
     //AS3_ReturnAS3Var(undefined);
 	AS3_ReturnAS3Var(retval);
 }
+
+////** amras3_decodeex **////
+void amras3_decodeex() __attribute__((used,
+     annotate("as3sig:public function amras3_decodeex(srcBuff:int, srcLen:int, retBegin:int):void"),
+     annotate("as3package:com.xfan.amras3.flascc")));
+
+void amras3_decodeex()
+{
+	inline_as3("trace(\"ver is 55\");");
+	
+	char *byteArray_src;
+	int* byteArray_ret;
+	char *buff;
+    int len;
+	int destlen;
+	int i;
+	
+    // convert arguments
+    AS3_GetScalarFromVar(byteArray_src, srcBuff);
+    AS3_GetScalarFromVar(len, srcLen);
+	AS3_GetScalarFromVar(byteArray_ret, retBegin);
+	
+	byteArray_ret[0] = (int)DecodeAMR(byteArray_src, len, &destlen);
+	byteArray_ret[1] = destlen;
+
+	inline_as3("trace(\"destbuf is \" + %0);" : : "r"(byteArray_ret[0]));
+	inline_as3("trace(\"destlen is \" + %0);" : : "r"(destlen));
+	inline_as3("trace(\"len is \" + %0);" : : "r"(len));
+	
+	//if (destlen > len) {
+	//	inline_as3("trace(\"dest len fail!\");");
+	//}
+	//else {
+	//	memcpy(byteArray_dest, buff, destlen);
+	//	free(buff);
+	//}
+
+    //inline_as3("%0 = srcBuff.bytesAvailable;" : "=r"(len));
+    //byteArray_c = (char *)malloc(len);
+
+    //inline_as3("CModule.ram.position = %0;" : : "r"(byteArray_c));
+    //inline_as3("srcBuff.readBytes(CModule.ram);");	
+	
+	//AS3_Trace(len);
+	//printf("len is %d", len);
+	//inline_as3("trace(\"src len is \" + %0);" : : "r"(len));
+	//inline_as3("trace(\"dest len is \" + %0);" : : "r"(destlen));
+	
+	//for (i = 0; i < len; ++i) {
+	//	byteArray_dest[i] = byteArray_src[i] + 1;
+	//	inline_as3("trace(\"src0 is \" + %0);" : : "r"(i));
+	//	int val = byteArray_c[i];
+	//	inline_as3("trace(\"src11 is \" + %0);" : : "r"(val));
+	//	byteArray_c[i] = byteArray_c[i] + 1;
+	//	val = byteArray_c[i];
+	//	inline_as3("trace(\"src21 is \" + %0);" : : "r"(val));
+		
+		//inline_as3("destBuff.writeByte(%0);" : : "r"(val));
+	//}
+	
+	//inline_as3("destBuff.position = 0;");
+	//inline_as3("CModule.ram.position = %0;" : : "r"(byteArray_c));
+	//inline_as3("destBuff.writeBytes(CModule.ram, %0, %1);" : : "r"(byteArray_c), "r"(len));
+	
+	//inline_as3("var retval:int = %0;" : : "r"(destlen));
+	//free(byteArray_c);
+    // return void
+    AS3_ReturnAS3Var(undefined);
+	//AS3_ReturnAS3Var(retval);
+}

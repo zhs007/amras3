@@ -24,6 +24,7 @@
 #include "AS3/AS3.h"
 
 #include "amrFileCodec.h"
+#include "codec/sp_enc.h"
 
 ////** amras3_encode **////
 void amras3_encode() __attribute__((used,
@@ -78,7 +79,7 @@ void amras3_encodeex() __attribute__((used,
 
 void amras3_encodeex()
 {
-	inline_as3("trace(\"ver is 50\");");
+	inline_as3("trace(\"ver is 52\");");
 	
 	char *byteArray_src;
 	char *byteArray_dest;
@@ -93,6 +94,10 @@ void amras3_encodeex()
 	AS3_GetScalarFromVar(byteArray_dest, destBuff);
 	
 	buff = EncodeAMR(byteArray_src, len, 1, 16, &destlen);
+
+	inline_as3("trace(\"destlen is \" + %0);" : : "r"(destlen));
+	inline_as3("trace(\"len is \" + %0);" : : "r"(len));
+	
 	if (destlen > len) {
 		inline_as3("trace(\"dest len fail!\");");
 	}

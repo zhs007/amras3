@@ -295,6 +295,8 @@ char* EncodeAMR(const char* wavBuf, int lenBuf, int nChannels, int nBitsPerSampl
         if (curLen <= 0) 
 			break;
 		
+		srcOffset += curLen;
+		
 		frames++;
  
 		/* call encoder */

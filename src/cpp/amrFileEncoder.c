@@ -308,6 +308,7 @@ char* EncodeAMR(const char* wavBuf, int lenBuf, int nChannels, int nBitsPerSampl
     }
  
     Encoder_Interface_exit(enstate);
+	*pBuffLen = usedDest;
  
     return destBuf;
 }

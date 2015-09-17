@@ -1,0 +1,1 @@
+../../sdk/usr/bin/gcc -Werror -Wno-write-strings -Wno-trigraphs -O4 ./src/cpp/as3api.c ./src/cpp/main.c ./src/cpp/amrFileEncoder.c ./src/cpp/codec/sp_enc.c ./src/cpp/codec/interf_enc.c ./src/cpp/amrFileDecoder.c ./src/cpp/codec/sp_dec.c ./src/cpp/codec/interf_dec.c -emit-swc=com.xfan.amras3.flascc -o amras3.swc

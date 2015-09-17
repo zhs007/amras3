@@ -186,3 +186,152 @@ int DecodeAMRFileToWAVEFile(const char* pchAMRFileName, const char* pchWAVEFilen
  
          return nFrameCount;
 }
+
+// 读第一个帧 - (参考帧)
+// 返回值: 0-出错; >0-正确
+int ReadAMRFrameFirstEx(const char* amrbuff, int off, int len, unsigned char frameBuffer[], int* stdFrameSize, unsigned char* stdFrameHeader)
+{
+    memset(frameBuffer, 0, sizeof(frameBuffer));
+ 
+    // 先读帧头
+	if (len <= off) {
+			return 0;
+	}
+	*stdFrameHeader = (unsigned char)amrbuff[off];
+ 
+    // 根据帧头计算帧大小
+    *stdFrameSize = caclAMRFrameSize(*stdFrameHeader);
+ 
+    // 读首帧
+    frameBuffer[0] = *stdFrameHeader;
+	
+	if (off + *stdFrameSize - 1 > len) {
+		return 0;
+	}
+	
+	memcpy(&(frameBuffer[1]), amrbuff + off + 1, *stdFrameSize - 1);
+ 
+    return *stdFrameSize;
+}
+ 
+// 返回值: 0-出错; 1-正确
+int ReadAMRFrameEx(const char* amrbuff, int off, int len, unsigned char frameBuffer[], int stdFrameSize, unsigned char stdFrameHeader)
+{
+    int bytes = 0;
+    unsigned char frameHeader; // 帧头
+	int curoff = 0;
+ 
+    memset(frameBuffer, 0, sizeof(frameBuffer));
+ 
+    // 读帧头
+    // 如果是坏帧(不是标准帧头)，则继续读下一个字节，直到读到标准帧头
+    while(1)
+    {
+		if (len <= off + curoff) {
+			return 0;
+		}
+		
+		frameHeader = (unsigned char)amrbuff[off + curoff];
+		
+		curoff += 1;
+		
+        if (frameHeader == stdFrameHeader) break;
+    }
+ 
+    // 读该帧的语音数据(帧头已经读过)
+    frameBuffer[0] = frameHeader;
+	if (off + curoff + stdFrameSize - 1 > len) {
+		return 0;
+	}
+	
+	memcpy(&(frameBuffer[1]), amrbuff + off + curoff, stdFrameSize - 1);
+	
+	curoff += stdFrameSize - 1;
+ 
+    return curoff;
+}
+
+char* WriteBuffer(char* buff, int* off, int* maxlen, const char* src, int srclen)
+{
+	int newlen = *maxlen;
+	if (*off + srclen > *maxlen) {
+		do{
+			newlen = newlen * 2;
+		}while(*off + srclen > newlen);
+		
+		buff = realloc(buff, newlen);
+		*maxlen = newlen;
+	}
+	
+	memcpy(buff + *off, src, srclen);
+	*off += srclen;
+	
+	return buff;
+}
+
+// 将AMR文件解码成WAVE文件
+char* DecodeAMR(const char* amrBuf, int lenBuf, int* pBuffLen)
+{
+	int amrOffset = 0;
+	char* destBuff = malloc(lenBuf);
+	int destlen = lenBuf;
+	int destoff = 0;
+    char magic[8];
+    int * destate;
+    int nFrameCount = 0;
+    int stdFrameSize;
+    unsigned char stdFrameHeader;
+	int curoff = 0;
+ 
+    unsigned char amrFrame[MAX_AMR_FRAME_SIZE];
+    short pcmFrame[PCM_FRAME_SIZE];
+ 
+    // 检查amr文件头
+	memcpy(magic, amrBuf + amrOffset, strlen(AMR_MAGIC_NUMBER));
+	amrOffset += strlen(AMR_MAGIC_NUMBER);
+    if (strncmp(magic, AMR_MAGIC_NUMBER, strlen(AMR_MAGIC_NUMBER))) {
+        return NULL;
+    }
+ 
+    /* init decoder */
+    destate = (int*)Decoder_Interface_init();
+ 
+    // 读第一帧 - 作为参考帧
+    memset(amrFrame, 0, sizeof(amrFrame));
+    memset(pcmFrame, 0, sizeof(pcmFrame));
+    curoff = ReadAMRFrameFirstEx(amrBuf, amrOffset, lenBuf, amrFrame, &stdFrameSize, &stdFrameHeader);
+	if (curoff == 0) {
+		return NULL;
+	}
+	
+	amrOffset += curoff;
+ 
+    // 解码一个AMR音频帧成PCM数据
+    Decoder_Interface_Decode(destate, amrFrame, pcmFrame, 0);
+    nFrameCount++;
+	destBuff = WriteBuffer(destBuff, &destoff, &destlen, (char*)pcmFrame, sizeof(short) * PCM_FRAME_SIZE);
+ 
+    // 逐帧解码AMR并写到WAVE文件里
+    while(1)
+    {
+        memset(amrFrame, 0, sizeof(amrFrame));
+        memset(pcmFrame, 0, sizeof(pcmFrame));
+		curoff = ReadAMRFrameEx(amrBuf, amrOffset, lenBuf, amrFrame, stdFrameSize, stdFrameHeader);
+        if (curoff == 0) {
+			break;
+		}
+		
+		amrOffset += curoff;
+ 
+        // 解码一个AMR音频帧成PCM数据 (8k-16b-单声道)
+        Decoder_Interface_Decode(destate, amrFrame, pcmFrame, 0);
+        nFrameCount++;
+		destBuff = WriteBuffer(destBuff, &destoff, &destlen, (char*)pcmFrame, sizeof(short) * PCM_FRAME_SIZE);
+    }
+ 
+    Decoder_Interface_exit(destate);
+	
+	*pBuffLen = destoff;
+ 
+    return destBuff;
+}

@@ -72,6 +72,8 @@ char* EncodeAMR(const char* wavBuf, int lenBuf, int nChannels, int nBitsPerSampl
 
 // 从WAVE流读一个完整的PCM音频帧
 // 返回值: 0-错误 >0: 完整帧大小
-int ReadPCMFrameEx(short speech[], const char* pBuff, int offset, int len, int nChannels, int nBitsPerSample);
+//int ReadPCMFrameEx(short speech[], const char* pBuff, int offset, int len, int nChannels, int nBitsPerSample);
+
+char* DecodeAMR(const char* amrBuf, int lenBuf, int* pBuffLen);
  
 #endif

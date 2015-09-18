@@ -1,12 +1,11 @@
 # 基于actionscript的AMR编码解码器
----
 
 ### 功能
 让flash能支持AMR文件的编码解码。
 
-使用了3GPP的C核心AMR解码器代码—— [(AMR) Speech Codec - 3GPP][1]，通过[CrossBridge][2]编译成swc做核心解码功能。
+使用了3GPP的C核心AMR解码器代码 **[(AMR) Speech Codec - 3GPP][1]** ，通过 **[CrossBridge][2]** 编译成swc做核心解码功能。
 
-关于如何播放AMR，可以参考另外一个项目——[imspeechas3][3]
+关于如何播放AMR，可以参考另外一个项目 **[imspeechas3][3]**
 
 ### 适用性
 
